@@ -16,9 +16,9 @@ from sklearn.decomposition import PCA
 # ---------- Configuration ----------
 FEATURES = ["likes_count", "comments_count", "shares_count", "impressions", "engagement_rate"]
 MODEL_DIR = "models"
-SCALER_FILE = os.path.join(MODEL_DIR, "scaler.pickle")
-KMEANS_FILE = os.path.join(MODEL_DIR, "kmeans.pickle")
-MAP_FILE = os.path.join(MODEL_DIR, "cluster_to_proxy.pickle")
+SCALER_FILE = os.path.join(MODEL_DIR, "scaler.pkl")
+KMEANS_FILE = os.path.join(MODEL_DIR, "kmeans.pkl")
+MAP_FILE = os.path.join(MODEL_DIR, "cluster_to_proxy.pkl")
 DEFAULT_K = 2
 
 st.set_page_config(page_title="Engagement → Mini Recommender", layout="wide")
@@ -44,15 +44,15 @@ def train_and_save(df_train, k=DEFAULT_K):
     low_cluster = int(cluster_score.idxmin())
     mapping = {high_cluster: 1, low_cluster: 0}
     # save
-    pickle.dump(scaler, SCALER_FILE)
-    pickle.dump(kmeans, KMEANS_FILE)
-    pickle.dump(mapping, MAP_FILE)
+    pkl.dump(scaler, SCALER_FILE)
+    pkl.dump(kmeans, KMEANS_FILE)
+    pkl.dump(mapping, MAP_FILE)
     return scaler, kmeans, mapping, cluster_means_df
 
 def load_models():
-    scaler = pickle.load(SCALER_FILE)
-    kmeans = pickle.load(KMEANS_FILE)
-    mapping = pickle.load(MAP_FILE)
+    scaler = pkl.load(SCALER_FILE)
+    kmeans = pkl.load(KMEANS_FILE)
+    mapping = pkl.load(MAP_FILE)
     return scaler, kmeans, mapping
 
 def compute_distance_score(x_scaled, kmeans, high_cluster_id):
