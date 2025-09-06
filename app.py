@@ -7,7 +7,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import os
-import pickle
+import joblib
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import pairwise_distances
@@ -16,9 +16,9 @@ from sklearn.decomposition import PCA
 # ---------- Configuration ----------
 FEATURES = ["likes_count", "comments_count", "shares_count", "impressions", "engagement_rate"]
 MODEL_DIR = "models"
-SCALER_FILE = os.path.join(MODEL_DIR, "scaler.pkl")
-KMEANS_FILE = os.path.join(MODEL_DIR, "kmeans.pkl")
-MAP_FILE = os.path.join(MODEL_DIR, "cluster_to_proxy.pkl")
+SCALER_FILE = os.path.join(MODEL_DIR, "scaler.joblib")
+KMEANS_FILE = os.path.join(MODEL_DIR, "kmeans.joblib")
+MAP_FILE = os.path.join(MODEL_DIR, "cluster_to_proxy.joblib")
 DEFAULT_K = 2
 
 st.set_page_config(page_title="Engagement → Mini Recommender", layout="wide")
@@ -44,15 +44,15 @@ def train_and_save(df_train, k=DEFAULT_K):
     low_cluster = int(cluster_score.idxmin())
     mapping = {high_cluster: 1, low_cluster: 0}
     # save
-    pkl.dump(scaler, SCALER_FILE)
-    pkl.dump(kmeans, KMEANS_FILE)
-    pkl.dump(mapping, MAP_FILE)
+    joblib.dump(scaler, SCALER_FILE)
+    joblib.dump(kmeans, KMEANS_FILE)
+    joblib.dump(mapping, MAP_FILE)
     return scaler, kmeans, mapping, cluster_means_df
 
 def load_models():
-    scaler = pkl.load(SCALER_FILE)
-    kmeans = pkl.load(KMEANS_FILE)
-    mapping = pkl.load(MAP_FILE)
+    scaler = joblib.load(SCALER_FILE)
+    kmeans = joblib.load(KMEANS_FILE)
+    mapping = joblib.load(MAP_FILE)
     return scaler, kmeans, mapping
 
 def compute_distance_score(x_scaled, kmeans, high_cluster_id):
